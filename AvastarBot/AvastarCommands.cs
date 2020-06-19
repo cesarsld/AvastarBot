@@ -64,6 +64,8 @@ namespace AvastarBot
                     }
                 }
             }
+            if (returnStr.Length == 0)
+                return "None";
             return returnStr;
         }
 
