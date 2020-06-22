@@ -177,7 +177,7 @@ namespace AvastarBot
         public async Task GetRemainingAvastarsOfSeries()
         {
             var totalSupply = await Blockchain.ChainWatcher.GetAvastarCount();
-            var remainder = (totalSupply - 200) % 5000;
+            var remainder = 5000 - (totalSupply - 200) % 5000;
             var series = ((totalSupply - 200) / 5000) + 1;
             var embed = new EmbedBuilder().WithColor(Color.Red).WithTitle($"{remainder} Avastars remain to mint for series {series}!");
             embed.WithUrl("https://avastars.io/").WithDescription("Keep Scrolling! ⏬⏬⏬");
