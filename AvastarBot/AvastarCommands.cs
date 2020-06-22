@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Globalization;
+using System.Numerics;
 using Discord;
 using Discord.Commands;
 using Newtonsoft.Json.Linq;
@@ -171,6 +172,17 @@ namespace AvastarBot
             await ReplyAsync(embed: embed.Build());
         }
 
+        [Command("remaining")]
+        [Alias("Remain", "remainder", "rem")]
+        public async Task GetRemainingAvastarsOfSeries()
+        {
+            var totalSupply = await Blockchain.ChainWatcher.GetAvastarCount();
+            var remainder = (totalSupply - 200) % 5000;
+            var series = ((totalSupply - 200) / 5000) + 1;
+            var embed = new EmbedBuilder().WithColor(Color.Red).WithTitle($"{remainder} Avastars remain to mint for series {series}!");
+            embed.WithUrl("https://avastars.io/").WithDescription("Keep Scrolling! ⏬⏬⏬");
+            await ReplyAsync(embed: embed.Build());
+        }
         //public async Task GetHelp()
         //{
         //    var embed = new Embed
