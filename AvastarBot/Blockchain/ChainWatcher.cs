@@ -7,6 +7,8 @@ using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Contracts;
 using System.Numerics;
 using Discord;
+using AvastarBot.Mongo;
+using MongoDB.Driver;
 namespace AvastarBot.Blockchain
 {
     public class ChainWatcher
@@ -30,20 +32,18 @@ namespace AvastarBot.Blockchain
             Web3 web3 = new Web3(web3Url);
             var newPrimeEvent = web3.Eth.GetEvent<NewPrimeEvent>(avastarContractAddress);
             bool isOn = true;
-
+            int lastMinted = 0;
             // get last block param from db
 
+            var checkCollec = DatabaseConnection.GetDb().GetCollection<Checkpoint>("Checkpoints");
+            var checkpoint = (await checkCollec.FindAsync(c => c.id == 1)).FirstOrDefault();
+
             BlockParameter lastBlock = await GetLastBlockCheckpoint(web3);
-            BlockParameter firstBlock = new BlockParameter(new HexBigInteger(lastBlock.BlockNumber.Value - 4));
+            BlockParameter firstBlock = new BlockParameter(new HexBigInteger(new BigInteger(checkpoint.lastBlockChecked)));
             while (isOn)
             {
-                if (first)
-                {
-                    firstBlock = new BlockParameter(new HexBigInteger(lastBlock.BlockNumber.Value - 400));
-                    first = false;
-                }
-                else
-                    firstBlock = new BlockParameter(new HexBigInteger(lastBlock.BlockNumber.Value));
+                checkpoint = (await checkCollec.FindAsync(c => c.id == 1)).FirstOrDefault();
+                firstBlock = new BlockParameter(new HexBigInteger(new BigInteger(checkpoint.lastBlockChecked)));
                 lastBlock = await GetLastBlockCheckpoint(web3);
                 try
                 {
@@ -55,8 +55,14 @@ namespace AvastarBot.Blockchain
 
                     foreach (var prime in newPrimeLogs)
                     {
-                        await PostToBirthChannel((int)prime.Event.id);
+                        if ((int)prime.Event.id > lastMinted)
+                        {
+                            lastMinted = (int)prime.Event.id;
+                            await PostToBirthChannel((int)prime.Event.id);
+                        }
                     }
+                    checkpoint.lastBlockChecked = Convert.ToInt32(lastBlock.BlockNumber.Value.ToString());
+                    await checkCollec.FindOneAndReplaceAsync(c => c.id == 1, checkpoint);
                 }
                 catch (Exception e)
                 {
@@ -91,5 +97,16 @@ namespace AvastarBot.Blockchain
     [Function("totalSupply", "uint256")]
     public class totalSupplyFunction : FunctionMessage
     {
+    }
+
+    public class Checkpoint
+    {
+        public int id;
+        public int lastBlockChecked;
+        public Checkpoint(int _id, int _lastBlockChecked)
+        {
+            id = _id;
+            lastBlockChecked = _lastBlockChecked;
+        }
     }
 }

@@ -10,6 +10,7 @@ namespace AvastarBot
         public static bool IsRelease = false;
         static void Main(string[] args)
         {
+            Mongo.DatabaseConnection.DatabaseName = "AvastarDatabase";
             RunBot();
         }
         static void RunBot()
