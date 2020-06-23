@@ -41,7 +41,7 @@ namespace AvastarBot
             return newStr;
         }
 
-        public string ReturnTraitOfRarity(JObject ava, JObject dict, string rarity)
+        public static string ReturnTraitOfRarity(JObject ava, JObject dict, string rarity)
         {
             var returnStr = "";
             var gender = (string)ava["attributes"][0]["value"];
@@ -70,7 +70,7 @@ namespace AvastarBot
             return returnStr;
         }
 
-        public int[] ReturnTraitDisparity(JObject ava, JObject dict)
+        public static int[] ReturnTraitDisparity(JObject ava, JObject dict)
         {
             var disparity = new int[5] { 0, 0, 0, 0, 0 };
             var gender = (string)ava["attributes"][0]["value"];
@@ -111,9 +111,8 @@ namespace AvastarBot
             return disparity;
         }
 
-        [Command("avastar", RunMode = RunMode.Async)]
-        [Alias("ava", "star")]
-        public async Task PostAvastarData(int id, string opt = "", string max = "")
+
+        public static async Task<EmbedBuilder> GenerateAvastarEmbed(int id, ulong channelId, string opt, string max, string extra = "")
         {
             string metadatastr = "";
             using (System.Net.WebClient wc = new System.Net.WebClient())
@@ -128,13 +127,13 @@ namespace AvastarBot
                 }
             }
             if (metadatastr.StartsWith("Invalid"))
-                return;
+                return null;
             var metadataJson = JObject.Parse(metadatastr);
             var traitJson = JObject.Parse(DiscordKeyGetter.GetFileData("data/create-traits-nosvg.json"));
-            var embed = new EmbedBuilder().WithTitle("Avastar #" + id.ToString()).
+            var embed = new EmbedBuilder().WithTitle("Avastar #" + id.ToString() + extra).
                 WithUrl("https://avastars.io/avastar/" + id.ToString());
-            if (Context.Channel.Id == 664598104695242782 || Context.Channel.Id == 706908035540320300 || max.Length > 0)
-               embed.WithImageUrl("https://avastars.io/media/" + id.ToString());
+            if (channelId == 664598104695242782 || channelId == 706908035540320300 || max.Length > 0)
+                embed.WithImageUrl("https://avastars.io/media/" + id.ToString());
             else
                 embed.WithThumbnailUrl("https://avastars.io/media/" + id.ToString());
             var rarity = (string)metadataJson["attributes"][6]["value"];
@@ -168,6 +167,14 @@ namespace AvastarBot
                 embed.AddField("<:iconCommon:723497539571154964> Common traits:", ReturnTraitOfRarity(metadataJson, traitJson, "Common"));
             if (opt.ToLower().StartsWith("unc"))
                 embed.AddField("<:iconUncommon:723497171395018762> Uncommon traits:", ReturnTraitOfRarity(metadataJson, traitJson, "Uncommon"));
+            return embed;
+        }
+
+        [Command("avastar", RunMode = RunMode.Async)]
+        [Alias("ava", "star")]
+        public async Task PostAvastarData(int id, string opt = "", string max = "")
+        {
+            var embed = await GenerateAvastarEmbed(id, Context.Channel.Id, opt, max);
             //embed.WithDescription($"Score : {metadataJson["attributes"][5]["value"]}\nTrait disparity : {disp[0]} <:iconCommon:723497539571154964> {disp[1]} <:iconUncommon:723497171395018762>   {disp[2]} <:iconRare:723497171919306813>   {disp[3]} <:iconEpic:723497171957317782>   {disp[4]} <:iconLegendary:723497171147685961>");
             await ReplyAsync(embed: embed.Build());
         }

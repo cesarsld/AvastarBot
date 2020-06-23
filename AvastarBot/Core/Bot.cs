@@ -38,7 +38,7 @@ namespace AvastarBot
             _commands = new CommandService();
             DiscordClient.Log += Logger.Log;
             DiscordClient.MessageReceived += HandleCommandAsync;
-            //DiscordClient.Ready += SmartContract.WatchChainForEvents;
+            DiscordClient.Ready += Blockchain.ChainWatcher.WatchChainForEvents;
         }
 
         ~Bot()
