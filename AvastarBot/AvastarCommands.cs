@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 using System.Globalization;
 using System.Numerics;
+using MongoDB.Driver;
 using Discord;
 using Discord.Commands;
 using Newtonsoft.Json.Linq;
+using AvastarBot.Mongo;
 namespace AvastarBot
 {
     public class AvastarCommands : ModuleBase
@@ -189,6 +193,65 @@ namespace AvastarBot
             var embed = new EmbedBuilder().WithColor(Color.Red).WithTitle($"{remainder} Avastars remain to be minted for series {series}!");
             embed.WithUrl("https://avastars.io/").WithDescription("Keep Scrolling! ⏬⏬⏬");
             await ReplyAsync(embed: embed.Build());
+        }
+
+        [Command("info")]
+        public async Task GetInfoOnAvastars([Remainder] string data)
+        {
+            var collec = DatabaseConnection.GetDb().GetCollection<AvastarObject>("AvastarCollection");
+            List<AvastarObject> avaList = null;
+            var embed = new EmbedBuilder().WithColor(Color.Green);
+            var split = data.Split(' ');
+            if (split[0].ToLower() == "gender")
+            {
+
+                if (split.Length > 2)
+                {
+                    if (split[1].ToLower() == "series")
+                    {
+                        if (split.Length > 3)
+                        {
+                            if (split[2] == "1")
+                                avaList = (await collec.FindAsync(ava => ava.id >= 200 && ava.id < 5200)).ToList();
+                            else if (split[2] == "2")
+                                avaList = (await collec.FindAsync(ava => ava.id >= 5200 && ava.id < 10200)).ToList();
+                            else if (split[2] == "3")
+                                avaList = (await collec.FindAsync(ava => ava.id >= 10200 && ava.id < 15200)).ToList();
+                            else if (split[2] == "4")
+                                avaList = (await collec.FindAsync(ava => ava.id >= 15200 && ava.id < 20200)).ToList();
+                            else if (split[2] == "5")
+                                avaList = (await collec.FindAsync(ava => ava.id >= 20200 && ava.id < 25200)).ToList();
+                            else
+                                return;
+                            embed.WithTitle($"Gender ratio data for series {split[2]}");
+                        }
+                        else
+                        {
+                            avaList = (await collec.FindAsync(ava => ava.id >= 200 && ava.id < 25200)).ToList();
+                            embed.WithTitle($"Gender ratio data for all series");
+                        }
+                    }
+                    else if (split[1].ToLower() == "exclusive")
+                    {
+                        avaList = (await collec.FindAsync(ava => ava.id >= 100 && ava.id < 200)).ToList();
+                        embed.WithTitle($"Gender ratio data for exclusive avstars");
+                    }
+                    else if (split[1].ToLower() == "founder")
+                    {
+                        embed.WithTitle($"Gender ratio data for exclusive avstars");
+                        avaList = (await collec.FindAsync(ava => ava.id < 100)).ToList();
+                    }
+                }
+                else
+                {
+                    embed.WithTitle($"Gender ratio data for all avstars");
+                    avaList = (await collec.FindAsync(ava => true)).ToList();
+                }
+                var femaleCount = avaList.Where(ava => ava.Gender.ToLower() == "female").Count();
+                var perc = (float)femaleCount / (float)avaList.Count * 100f;
+                embed.WithDescription($"Female ratio = {perc.ToString("F3")}\nMale ratio = {(100f - perc).ToString("F3")}");
+                await ReplyAsync(embed: embed.Build());
+            }
         }
         //public async Task GetHelp()
         //{
