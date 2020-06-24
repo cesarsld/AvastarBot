@@ -15,6 +15,7 @@ namespace AvastarBot.Blockchain
     {
         public static string web3Url = "https://mainnet.infura.io/v3/b4e2781f02a94a5a96dcf8ce8cab9449";
         public static string avastarContractAddress = "0xF3E778F839934fC819cFA1040AabaCeCBA01e049";
+        private static int lastMinted = 0;
 
         public static async Task<BigInteger> GetAvastarCount()
         {
@@ -32,7 +33,6 @@ namespace AvastarBot.Blockchain
             Web3 web3 = new Web3(web3Url);
             var newPrimeEvent = web3.Eth.GetEvent<NewPrimeEvent>(avastarContractAddress);
             bool isOn = true;
-            int lastMinted = 0;
             // get last block param from db
 
             var checkCollec = DatabaseConnection.GetDb().GetCollection<Checkpoint>("Checkpoints");
