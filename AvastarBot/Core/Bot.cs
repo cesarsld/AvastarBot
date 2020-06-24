@@ -115,13 +115,16 @@ namespace AvastarBot
         /// <summary>
         /// Start the Discord client.
         /// </summary>
-        public async Task RunAsync()
+        public async Task RunAsync(string token, string mongo_url)
         {
             Logger.LogInternal("Registering commands.");
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), null);
 
+            Logger.LogInternal("Setting up mongo connection.");
+            Mongo.DatabaseConnection.Init(mongo_url);
+
             Logger.LogInternal("Connecting to the server.");
-            await DiscordClient.LoginAsync(TokenType.Bot, DiscordKeyGetter.GetKey());
+            await DiscordClient.LoginAsync(TokenType.Bot, token);
             await DiscordClient.StartAsync();
             //await DiscordClient.LogoutAsync();
             await Task.Delay(-1); ;

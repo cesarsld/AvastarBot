@@ -18,6 +18,12 @@ namespace AvastarBot.Mongo
             Database = Client.GetDatabase(DatabaseName);
         }
 
+        public static void Init(string mongo_url)
+        {
+            Client = new MongoClient(mongo_url);
+            Database = Client.GetDatabase(DatabaseName);
+        }
+
         public static IMongoDatabase GetDb()
         {
             if (Client == null)
