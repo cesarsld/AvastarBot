@@ -74,7 +74,7 @@ namespace AvastarBot.Blockchain
 
         private static async Task PostToBirthChannel(int id)
         {
-            var embed = await AvastarCommands.GenerateAvastarEmbed(id, 0, "", "", " just got minted!");
+            var embed = await AvastarCommands.GenerateAvastarEmbed(id, 0, "", "", " teleported!");
             var channel = Bot.GetChannelContext(725041690133397555) as IMessageChannel;
             await channel.SendMessageAsync(embed: embed.Build());
         }
