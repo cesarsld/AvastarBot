@@ -57,6 +57,8 @@ namespace AvastarBot.Blockchain
                     {
                         if ((int)prime.Event.id > lastMinted)
                         {
+                            if (await AvastarObject.GetAvaCount() == (int)prime.Event.id)
+                                await AvastarObject.CreateAva((int)prime.Event.id);
                             lastMinted = (int)prime.Event.id;
                             await PostToBirthChannel((int)prime.Event.id);
                         }
