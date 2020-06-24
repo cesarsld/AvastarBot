@@ -195,7 +195,7 @@ namespace AvastarBot
             await ReplyAsync(embed: embed.Build());
         }
 
-        [Command("info")]
+        [Command("info", RunMode = RunMode.Async)]
         public async Task GetInfoOnAvastars([Remainder] string data)
         {
             var collec = DatabaseConnection.GetDb().GetCollection<AvastarObject>("AvastarCollection");
@@ -205,11 +205,11 @@ namespace AvastarBot
             if (split[0].ToLower() == "gender")
             {
 
-                if (split.Length > 2)
+                if (split.Length >= 2)
                 {
                     if (split[1].ToLower() == "series")
                     {
-                        if (split.Length > 3)
+                        if (split.Length >= 3)
                         {
                             if (split[2] == "1")
                                 avaList = (await collec.FindAsync(ava => ava.id >= 200 && ava.id < 5200)).ToList();
@@ -234,11 +234,11 @@ namespace AvastarBot
                     else if (split[1].ToLower() == "exclusive")
                     {
                         avaList = (await collec.FindAsync(ava => ava.id >= 100 && ava.id < 200)).ToList();
-                        embed.WithTitle($"Gender ratio data for exclusive avstars");
+                        embed.WithTitle($"Gender ratio data for exclusive Avastars");
                     }
                     else if (split[1].ToLower() == "founder")
                     {
-                        embed.WithTitle($"Gender ratio data for exclusive avstars");
+                        embed.WithTitle($"Gender ratio data for founder Avastars");
                         avaList = (await collec.FindAsync(ava => ava.id < 100)).ToList();
                     }
                 }
@@ -249,7 +249,68 @@ namespace AvastarBot
                 }
                 var femaleCount = avaList.Where(ava => ava.Gender.ToLower() == "female").Count();
                 var perc = (float)femaleCount / (float)avaList.Count * 100f;
-                embed.WithDescription($"**Female ratio = {perc.ToString("F2")}%**\n**Male ratio = {(100f - perc).ToString("F2")}%**");
+                embed.WithDescription($"** ♀️ {perc.ToString("F2")}% ({femaleCount})**\n** ♂️ {(100f - perc).ToString("F2")}% ({avaList.Count - femaleCount})**");
+                await ReplyAsync(embed: embed.Build());
+            }
+            else if (split[0].ToLower() == "rarity")
+            {
+                if (split.Length >= 2)
+                {
+                    if (split[1].ToLower() == "series")
+                    {
+                        if (split.Length >= 3)
+                        {
+                            if (split[2] == "1")
+                                avaList = (await collec.FindAsync(ava => ava.id >= 200 && ava.id < 5200)).ToList();
+                            else if (split[2] == "2")
+                                avaList = (await collec.FindAsync(ava => ava.id >= 5200 && ava.id < 10200)).ToList();
+                            else if (split[2] == "3")
+                                avaList = (await collec.FindAsync(ava => ava.id >= 10200 && ava.id < 15200)).ToList();
+                            else if (split[2] == "4")
+                                avaList = (await collec.FindAsync(ava => ava.id >= 15200 && ava.id < 20200)).ToList();
+                            else if (split[2] == "5")
+                                avaList = (await collec.FindAsync(ava => ava.id >= 20200 && ava.id < 25200)).ToList();
+                            else
+                                return;
+                            embed.WithTitle($"Rarity distribution data for series {split[2]}");
+                        }
+                        else
+                        {
+                            avaList = (await collec.FindAsync(ava => ava.id >= 200 && ava.id < 25200)).ToList();
+                            embed.WithTitle($"Rarity distribution data for all series");
+                        }
+                    }
+                    else if (split[1].ToLower() == "exclusive")
+                    {
+                        avaList = (await collec.FindAsync(ava => ava.id >= 100 && ava.id < 200)).ToList();
+                        embed.WithTitle($"Rarity distribution data for exclusive Avastars");
+                    }
+                    else if (split[1].ToLower() == "founder")
+                    {
+                        embed.WithTitle($"Rarity distribution data for founder Avastars");
+                        avaList = (await collec.FindAsync(ava => ava.id < 100)).ToList();
+                    }
+                }
+                else
+                {
+                    embed.WithTitle($"Rarity distribution data for all Avastars");
+                    avaList = (await collec.FindAsync(ava => true)).ToList();
+                }
+                var commonCount = avaList.Where(ava => ava.Score < 33).Count();
+                var uncommonCount = avaList.Where(ava => ava.Score >= 33 && ava.Score < 41).Count();
+                var rareCount = avaList.Where(ava => ava.Score >= 41 && ava.Score < 50).Count();
+                var epicCount = avaList.Where(ava => ava.Score >= 50 && ava.Score < 60).Count();
+                var legCount = avaList.Where(ava => ava.Score >= 60).Count();
+                var commonPerc = (float)commonCount / (float)avaList.Count * 100f;
+                var uncommonPerc = (float)uncommonCount / (float)avaList.Count * 100f;
+                var rarePerc = (float)rareCount / (float)avaList.Count * 100f;
+                var epicPerc = (float)epicCount / (float)avaList.Count * 100f;
+                var legPerc = (float)legCount / (float)avaList.Count * 100f; 
+                embed.WithDescription($"**<:iconCommon:723497539571154964> {commonPerc.ToString("F2")}% ({commonCount})**\n" +
+                                      $"**<:iconUncommon:723497171395018762> {uncommonPerc.ToString("F2")}% ({uncommonCount})**\n" +
+                                      $"**<:iconRare:723497171919306813> {rarePerc.ToString("F2")}% ({rareCount})**\n" +
+                                      $"**<:iconEpic:723497171957317782> {epicPerc.ToString("F2")}% ({epicCount})**\n" +
+                                      $"**<:iconLegendary:723497171147685961> {legPerc.ToString("F2")}% ({legCount})**");
                 await ReplyAsync(embed: embed.Build());
             }
         }
