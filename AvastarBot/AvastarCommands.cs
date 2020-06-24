@@ -261,18 +261,56 @@ namespace AvastarBot
                         if (split.Length >= 3)
                         {
                             if (split[2] == "1")
+                            {
+                                embed.WithTitle($"Rarity distribution data for series {split[2]}");
                                 avaList = (await collec.FindAsync(ava => ava.id >= 200 && ava.id < 5200)).ToList();
+                            }
                             else if (split[2] == "2")
+                            {
+                                embed.WithTitle($"Rarity distribution data for series {split[2]}");
                                 avaList = (await collec.FindAsync(ava => ava.id >= 5200 && ava.id < 10200)).ToList();
+                            }
                             else if (split[2] == "3")
+                            {
+                                embed.WithTitle($"Rarity distribution data for series {split[2]}");
                                 avaList = (await collec.FindAsync(ava => ava.id >= 10200 && ava.id < 15200)).ToList();
+                            }
                             else if (split[2] == "4")
+                            {
+                                embed.WithTitle($"Rarity distribution data for series {split[2]}");
                                 avaList = (await collec.FindAsync(ava => ava.id >= 15200 && ava.id < 20200)).ToList();
+                            }
                             else if (split[2] == "5")
+                            {
+                                embed.WithTitle($"Rarity distribution data for series {split[2]}");
                                 avaList = (await collec.FindAsync(ava => ava.id >= 20200 && ava.id < 25200)).ToList();
+                            }
+                            else if (split[2].ToLower() == "male")
+                            {
+                                embed.WithTitle($"Male rarity distribution data for all series");
+                                avaList = (await collec.FindAsync(ava => ava.id >= 200 && ava.id < 25200 && ava.Gender.ToLower() == "male")).ToList();
+                            }
+                            else if (split[2].ToLower() == "female")
+                            {
+                                embed.WithTitle($"Male rarity distribution data for all series");
+                                avaList = (await collec.FindAsync(ava => ava.id >= 200 && ava.id < 25200 && ava.Gender.ToLower() == "female")).ToList();
+                            }
                             else
                                 return;
-                            embed.WithTitle($"Rarity distribution data for series {split[2]}");
+                            if (split.Length == 4 && (split[2].ToLower() != "male" || split[2].ToLower() != "female"))
+                            {
+                                if (split[3] == "male")
+                                {
+                                    embed.WithTitle($"Male rarity distribution data for series {split[2]}");
+                                    avaList = avaList.Where(ava => ava.Gender == "male").ToList();
+                                }
+                                else if (split[3] == "female")
+                                {
+                                    embed.WithTitle($"Female rarity distribution data for series {split[2]}");
+                                    avaList = avaList.Where(ava => ava.Gender == "female").ToList();
+                                }
+                                else return;
+                            }
                         }
                         else
                         {
@@ -289,6 +327,16 @@ namespace AvastarBot
                     {
                         embed.WithTitle($"Rarity distribution data for founder Avastars");
                         avaList = (await collec.FindAsync(ava => ava.id < 100)).ToList();
+                    }
+                    else if (split[1].ToLower() == "male")
+                    {
+                        embed.WithTitle($"Male rarity distribution data for all Avastars");
+                        avaList = (await collec.FindAsync(ava => ava.Gender.ToLower() == "male")).ToList();
+                    }
+                    else if (split[1].ToLower() == "female")
+                    {
+                        embed.WithTitle($"Female rarity distribution data for all Avastars");
+                        avaList = (await collec.FindAsync(ava => ava.Gender.ToLower() == "female")).ToList();
                     }
                 }
                 else
