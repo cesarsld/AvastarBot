@@ -244,12 +244,12 @@ namespace AvastarBot
                 }
                 else
                 {
-                    embed.WithTitle($"Gender ratio data for all avstars");
+                    embed.WithTitle($"Gender ratio data for all Avastars");
                     avaList = (await collec.FindAsync(ava => true)).ToList();
                 }
                 var femaleCount = avaList.Where(ava => ava.Gender.ToLower() == "female").Count();
                 var perc = (float)femaleCount / (float)avaList.Count * 100f;
-                embed.WithDescription($"Female ratio = {perc.ToString("F3")}\nMale ratio = {(100f - perc).ToString("F3")}");
+                embed.WithDescription($"**Female ratio = {perc.ToString("F2")}%**\n**Male ratio = {(100f - perc).ToString("F2")}%**");
                 await ReplyAsync(embed: embed.Build());
             }
         }
