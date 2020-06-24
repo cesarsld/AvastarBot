@@ -320,8 +320,24 @@ namespace AvastarBot
                     }
                     else if (split[1].ToLower() == "exclusive")
                     {
-                        avaList = (await collec.FindAsync(ava => ava.id >= 100 && ava.id < 200)).ToList();
-                        embed.WithTitle($"Rarity distribution data for exclusive Avastars");
+                        if (split.Length == 3)
+                        {
+                            if (split[2].ToLower() == "male")
+                            {
+                                avaList = (await collec.FindAsync(ava => ava.id >= 100 && ava.id < 200 && ava.Gender.ToLower() == "male")).ToList();
+                                embed.WithTitle($"Male rarity distribution data for exclusive Avastars");
+                            }
+                            else if (split[2].ToLower() == "female")
+                            {
+                                avaList = (await collec.FindAsync(ava => ava.id >= 100 && ava.id < 200 && ava.Gender.ToLower() == "female")).ToList();
+                                embed.WithTitle($"Female rarity distribution data for exclusive Avastars");
+                            }
+                        }
+                        else
+                        {
+                            avaList = (await collec.FindAsync(ava => ava.id >= 100 && ava.id < 200)).ToList();
+                            embed.WithTitle($"Rarity distribution data for exclusive Avastars");
+                        }
                     }
                     else if (split[1].ToLower() == "founder")
                     {
