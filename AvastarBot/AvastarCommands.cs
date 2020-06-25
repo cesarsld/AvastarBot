@@ -13,6 +13,7 @@ namespace AvastarBot
 {
     public class AvastarCommands : ModuleBase
     {
+        // hi
         public AvastarCommands()
         {
         }
@@ -369,7 +370,7 @@ namespace AvastarBot
                 var uncommonPerc = (float)uncommonCount / (float)avaList.Count * 100f;
                 var rarePerc = (float)rareCount / (float)avaList.Count * 100f;
                 var epicPerc = (float)epicCount / (float)avaList.Count * 100f;
-                var legPerc = (float)legCount / (float)avaList.Count * 100f; 
+                var legPerc = (float)legCount / (float)avaList.Count * 100f;
                 embed.WithDescription($"**<:iconCommon:723497539571154964> {commonPerc.ToString("F2")}% ({commonCount})**\n" +
                                       $"**<:iconUncommon:723497171395018762> {uncommonPerc.ToString("F2")}% ({uncommonCount})**\n" +
                                       $"**<:iconRare:723497171919306813> {rarePerc.ToString("F2")}% ({rareCount})**\n" +
@@ -377,6 +378,22 @@ namespace AvastarBot
                                       $"**<:iconLegendary:723497171147685961> {legPerc.ToString("F2")}% ({legCount})**");
                 await ReplyAsync(embed: embed.Build());
             }
+        }
+
+        [Command("help")]
+        public async Task GetHelp()
+        {
+            var embed = new EmbedBuilder();
+            embed.WithColor(Color.Blue);
+            embed.WithTitle("👋 AvastarBot");
+            embed.WithDescription("Community Bot for the Avastar project!");
+            embed.AddField("Link Avastar", "`$avastar/ava [ID] [common/uncommon/rare/epic/leg](optional) [char](optional, must follow rarity option)` to link an avastar on a channel\nExample: `$ava 1337 leg m` `$ava 101`");
+            embed.AddField("Find remaining amount of Avastars to teleport", "`$rem`");
+            embed.AddField("Find some data", "`$info [gender/rarity] [founder/exclusive/series](optional) [1/2/3/4/5](if series selected previously, optional) [male/female](if rarity selected initially, optional)`\n" +
+                "This command will give you gender ratio and rarity distribution on a selected population\nExample : `$info rarity series 1 female` " +
+                "`$info gender` `$info rarity exclusive`");
+            embed.WithFooter("Scroll, scoll, scroll!");
+            await ReplyAsync(embed: embed.Build());
         }
         //public async Task GetHelp()
         //{
