@@ -136,6 +136,7 @@ namespace AvastarBot
                 return null;
             var metadataJson = JObject.Parse(metadatastr);
             Logger.LogInternal("Get Json");
+            Logger.LogInternal(System.IO.Directory.GetCurrentDirectory());
             var traitJson = JObject.Parse(DiscordKeyGetter.GetFileData("create-traits-nosvg.json"));
             Logger.LogInternal("Generating Embed");
             var embed = new EmbedBuilder().WithTitle("Avastar #" + id.ToString() + extra).
