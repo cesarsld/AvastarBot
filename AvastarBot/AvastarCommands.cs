@@ -134,7 +134,7 @@ namespace AvastarBot
             if (metadatastr.StartsWith("Invalid"))
                 return null;
             var metadataJson = JObject.Parse(metadatastr);
-            var traitJson = JObject.Parse(DiscordKeyGetter.GetFileData("data/create-traits-nosvg.json"));
+            var traitJson = JObject.Parse(DiscordKeyGetter.GetFileData("create-traits-nosvg.json"));
             var embed = new EmbedBuilder().WithTitle("Avastar #" + id.ToString() + extra).
                 WithUrl("https://avastars.io/avastar/" + id.ToString());
             if (channelId == 664598104695242782 || channelId == 706908035540320300 || max.Length > 0)
