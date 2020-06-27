@@ -23,6 +23,32 @@ namespace AvastarBot.Mongo
             return (int)(await collec.CountDocumentsAsync(a => true));
         }
 
+        public static async Task<List<AvastarObject>> GetAvaList()
+        {
+            var collec = DatabaseConnection.GetDb().GetCollection<AvastarObject>("AvastarCollection");
+            return (await collec.FindAsync(a => true)).ToList();
+        }
+
+        public static async Task<List<AvastarObject>> GetSerieList(int series)
+        {
+            var collec = DatabaseConnection.GetDb().GetCollection<AvastarObject>("AvastarCollection");
+            return (await collec.FindAsync(a => a.id > 199 + 5000 * (series - 1) && a.id < 200 + 5000 * series)).ToList();
+        }
+
+        public static async Task<List<AvastarObject>> GetSeriesList()
+        {
+            var collec = DatabaseConnection.GetDb().GetCollection<AvastarObject>("AvastarCollection");
+            return (await collec.FindAsync(a => a.id > 199)).ToList();
+        }
+
+        public static async Task UpdateUBs(int id)
+        {
+            var collec = DatabaseConnection.GetDb().GetCollection<AvastarObject>("AvastarCollection");
+            var ava = (await collec.FindAsync(a => a.id == id)).FirstOrDefault();
+            await UB2Object.UpdateUb2List(ava);
+            await UB3Object.UpdateUb3List(ava);
+        }
+
         public static async Task CreateAva(int id)
         {
             var ava = new AvastarObject();
@@ -53,6 +79,8 @@ namespace AvastarBot.Mongo
             }
             var collec = DatabaseConnection.GetDb().GetCollection<AvastarObject>("AvastarCollection");
             await collec.InsertOneAsync(ava);
+            await UB2Object.UpdateUb2List(ava);
+            await UB3Object.UpdateUb3List(ava);
         }
     }
 }
