@@ -10,7 +10,7 @@ namespace AvastarBot
 {
     public class Bot
     {
-        public static char CommandPrefix = '$';
+        public static char CommandPrefix;
         public static DiscordSocketClient DiscordClient { get; set; }
         private readonly CommandService _commands;
 
@@ -116,13 +116,13 @@ namespace AvastarBot
         /// <summary>
         /// Start the Discord client.
         /// </summary>
-        public async Task RunAsync(string token, string mongo_url)
+        public async Task RunAsync(string token, string prefix)
         {
             Logger.LogInternal("Registering commands.");
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), null);
 
-            Logger.LogInternal("Setting up mongo connection.");
-            Mongo.DatabaseConnection.Init(mongo_url);
+            Logger.LogInternal($"Setting prefix to: {prefix}");
+            CommandPrefix = char.Parse(prefix);
 
             Logger.LogInternal("Connecting to the server.");
             await DiscordClient.LoginAsync(TokenType.Bot, token);

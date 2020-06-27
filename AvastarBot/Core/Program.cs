@@ -11,17 +11,18 @@ namespace AvastarBot
         static void Main(string[] args)
         {
             Mongo.DatabaseConnection.DatabaseName = "AvastarDatabase";
-            if (args.Length == 3)
+            Mongo.DatabaseConnection.MongoUrl = args[0];
+            if (args[1].ToLower() == "prod")
                 IsRelease = true;
-            RunBot(token: args[0], mongo_url: args[1]);
+            RunBot(token: args[2], prefix: args[3]);
         }
-        static void RunBot(string token, string mongo_url)
+        static void RunBot(string token, string prefix)
         {
             while (true)
             {
                 try
                 {
-                    new Bot().RunAsync(token, mongo_url).GetAwaiter().GetResult();
+                    new Bot().RunAsync(token, prefix).GetAwaiter().GetResult();
                 }
                 catch (Exception ex)
                 {
