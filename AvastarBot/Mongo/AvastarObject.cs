@@ -17,6 +17,13 @@ namespace AvastarBot.Mongo
         {
         }
 
+        public static async Task<AvastarObject> GetAva(int id)
+        {
+            var collec = DatabaseConnection.GetDb().GetCollection<AvastarObject>("AvastarCollection");
+            var ava = await collec.FindAsync(a => a.id == id);
+            return ava.FirstOrDefault();
+        }
+
         public static async Task<int> GetAvaCount()
         {
             var collec = DatabaseConnection.GetDb().GetCollection<AvastarObject>("AvastarCollection");

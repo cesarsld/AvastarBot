@@ -32,6 +32,29 @@ namespace AvastarBot.Mongo
             Match.Add(avaId);
         }
 
+        public static async Task<List<UB3Object>> GetUB3CombosForId(int id)
+        {
+            var ub3List = new List<UB3Object>();
+            var ub3Collec = DatabaseConnection.GetDb().GetCollection<UB3Object>("UB3Collection");
+            var ava = await AvastarObject.GetAva(id);
+            ava.traits.Remove("background_color");
+            ava.traits.Remove("backdrop");
+            var kp = ava.traits.ToList();
+            for (int i = 0; i < kp.Count - 2; i++)
+            {
+                for (int j = i + 1; j < kp.Count - 1; j++)
+                {
+                    for (int k = j + 1; k < kp.Count; k++)
+                    {
+                        var combo = (await ub3Collec.FindAsync(c => c.Trait1Name == kp[i].Key && c.Trait2Name == kp[j].Key && c.Trait3Name == kp[k].Key && c.Trait1Type == kp[i].Value && c.Trait2Type == kp[j].Value && c.Trait3Type == kp[k].Value)).FirstOrDefault();
+                        ub3List.Add(combo);
+                    }
+                }
+            }
+            ub3List = ub3List.Where(ub3 => ub3.Match.Count == 1).ToList();
+            return ub3List;
+        }
+
         private bool CheckCombo(string n1, string n2, string n3, string t1, string t2, string t3)
         {
             return Trait1Name == n1 && Trait2Name == n2 && Trait3Name == n3
