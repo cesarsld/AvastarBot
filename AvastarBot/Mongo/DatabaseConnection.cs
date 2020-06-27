@@ -8,13 +8,12 @@ namespace AvastarBot.Mongo
     {
         private static MongoClient Client;
         private static IMongoDatabase Database;
+        public static string MongoUrl;
         public static string DatabaseName;
 
         private static void SetupConnection()
         {
-            var connectionString = DiscordKeyGetter.GetDBUrl();
-
-            Client = new MongoClient(connectionString);
+            Client = new MongoClient(MongoUrl);
             Database = Client.GetDatabase(DatabaseName);
         }
 
