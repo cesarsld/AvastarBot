@@ -32,6 +32,7 @@ namespace AvastarBot.Mongo
             var ub2List = new List<UB2Object>();
             var ub2Collec = DatabaseConnection.GetDb().GetCollection<UB2Object>("UB2Collection");
             var ava = await AvastarObject.GetAva(id);
+            var gender = ava.Gender;
             ava.traits.Remove("background_color");
             ava.traits.Remove("backdrop");
             var kp = ava.traits.ToList();
@@ -43,7 +44,26 @@ namespace AvastarBot.Mongo
                     ub2List.Add(combo);
                 }
             }
+            var ub2Many = ub2List.Where(ub2 => ub2.Match.Count > 1).ToList();
+            var avaList = await AvastarObject.GetAvaList();
             ub2List = ub2List.Where(ub2 => ub2.Match.Count == 1).ToList();
+            foreach (var ubs in ub2Many)
+            {
+                bool uniqueGender = true;
+                foreach (var token in ubs.Match)
+                {
+                    if (avaList.Where(a => a.id == token).FirstOrDefault().Gender == gender)
+                    {
+                        uniqueGender = false;
+                        break;
+                    }
+                }
+                if (uniqueGender)
+                {
+                    ubs.Match = new List<long>() { id };
+                    ub2List.Add(ubs);
+                }
+            }
             return ub2List;
         }
 

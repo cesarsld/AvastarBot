@@ -172,8 +172,8 @@ namespace AvastarBot
                 embed.AddField("<:iconCommon:723497539571154964> Common traits:", ReturnTraitOfRarity(metadataJson, traitJson, "Common"));
             if (opt.ToLower().StartsWith("unc"))
                 embed.AddField("<:iconUncommon:723497171395018762> Uncommon traits:", ReturnTraitOfRarity(metadataJson, traitJson, "Uncommon"));
-
-            embed.AddField("Unique-By's", $"Fetching combos (Takes few seconds) <a:loading:726356725648719894>");
+            if (id > 199)
+                embed.AddField("Unique-By's", $"Fetching combos (Takes few seconds) <a:loading:726356725648719894>");
             return embed;
         }
 
@@ -184,6 +184,8 @@ namespace AvastarBot
             var embed = await GenerateAvastarEmbed(id, Context.Channel.Id, opt, max);
             //embed.WithDescription($"Score : {metadataJson["attributes"][5]["value"]}\nTrait disparity : {disp[0]} <:iconCommon:723497539571154964> {disp[1]} <:iconUncommon:723497171395018762>   {disp[2]} <:iconRare:723497171919306813>   {disp[3]} <:iconEpic:723497171957317782>   {disp[4]} <:iconLegendary:723497171147685961>");
             var message = await ReplyAsync(embed: embed.Build());
+            if (id < 200)
+                return;
             embed = message.Embeds.FirstOrDefault().ToEmbedBuilder();
             var ubField = embed.Fields.Where(f => f.Name == "Unique-By's").FirstOrDefault();
             var input = "";

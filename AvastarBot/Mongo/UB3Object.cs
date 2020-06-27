@@ -37,6 +37,7 @@ namespace AvastarBot.Mongo
             var ub3List = new List<UB3Object>();
             var ub3Collec = DatabaseConnection.GetDb().GetCollection<UB3Object>("UB3Collection");
             var ava = await AvastarObject.GetAva(id);
+            var gender = ava.Gender;
             ava.traits.Remove("background_color");
             ava.traits.Remove("backdrop");
             var kp = ava.traits.ToList();
@@ -51,7 +52,26 @@ namespace AvastarBot.Mongo
                     }
                 }
             }
+            var ub3Many = ub3List.Where(ub3 => ub3.Match.Count > 1).ToList();
+            var avaList = await AvastarObject.GetAvaList();
             ub3List = ub3List.Where(ub3 => ub3.Match.Count == 1).ToList();
+            foreach (var ubs in ub3Many)
+            {
+                bool uniqueGender = true;
+                foreach (var token in ubs.Match)
+                {
+                    if (avaList.Where(a => a.id == token).FirstOrDefault().Gender == gender)
+                    {
+                        uniqueGender = false;
+                        break;
+                    }
+                }
+                if (uniqueGender)
+                {
+                    ubs.Match = new List<long>() { id };
+                    ub3List.Add(ubs);
+                }
+            }
             return ub3List;
         }
 
