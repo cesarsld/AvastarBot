@@ -31,6 +31,11 @@ namespace AvastarBot.Mongo
             Match = new List<long>();
             Match.Add(avaId);
         }
+        public static async Task<List<UB3Object>> GetUb3List()
+        {
+            var ub3Collec = DatabaseConnection.GetDb().GetCollection<UB3Object>("UB3Collection");
+            return (await ub3Collec.FindAsync(a => true)).ToList();
+        }
 
         public static async Task<List<UB3Object>> GetUB3CombosForId(int id)
         {

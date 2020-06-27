@@ -67,6 +67,12 @@ namespace AvastarBot.Mongo
             return ub2List;
         }
 
+        public static async Task<List<UB2Object>> GetUb2List()
+        {
+            var ub2Collec = DatabaseConnection.GetDb().GetCollection<UB2Object>("UB2Collection");
+            return (await ub2Collec.FindAsync(a => true)).ToList();
+        }
+
         private bool CheckCombo(string n1, string n2, string t1, string t2)
         {
             return Trait1Name == n1 && Trait2Name == n2 && Trait1Type == t1 && Trait2Type == t2;

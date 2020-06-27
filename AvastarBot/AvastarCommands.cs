@@ -172,7 +172,7 @@ namespace AvastarBot
                 embed.AddField("<:iconCommon:723497539571154964> Common traits:", ReturnTraitOfRarity(metadataJson, traitJson, "Common"));
             if (opt.ToLower().StartsWith("unc"))
                 embed.AddField("<:iconUncommon:723497171395018762> Uncommon traits:", ReturnTraitOfRarity(metadataJson, traitJson, "Uncommon"));
-            if (id > 199)
+            if (id > 199 && extra.Length == 0)
                 embed.AddField("Unique-By's", $"Fetching combos (Takes few seconds) <a:loading:726356725648719894>");
             return embed;
         }
