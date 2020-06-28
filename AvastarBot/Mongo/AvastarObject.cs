@@ -85,8 +85,9 @@ namespace AvastarBot.Mongo
             }
             var collec = DatabaseConnection.GetDb().GetCollection<AvastarObject>("AvastarCollection");
             await collec.InsertOneAsync(ava);
-            await UB2Object.UpdateUb2List(ava);
-            await UB3Object.UpdateUb3List(ava);
+            var ub2List = await UB2Object.UpdateUb2List(ava);
+            var ub3List = await UB3Object.UpdateUb3List(ava);
+            await AvaUBObject.UpdateAvaUbList(ava, ub2List, ub3List);
         }
     }
 }

@@ -115,9 +115,10 @@ namespace AvastarBot.Mongo
         }
 
         //TODO improve function to prevent 220 db calls...
-        public static async Task UpdateUb3List(AvastarObject ava)
+        public static async Task<List<UB3Object>> UpdateUb3List(AvastarObject ava)
         {
             var ub3Collec = DatabaseConnection.GetDb().GetCollection<UB3Object>("UB3Collection");
+            var returnList = new List<UB3Object>();
             ava.traits.Remove("background_color");
             ava.traits.Remove("backdrop");
             var kp = ava.traits.ToList();
@@ -131,17 +132,21 @@ namespace AvastarBot.Mongo
 
                         if (combo == null)
                         {
-                            await ub3Collec.InsertOneAsync(new UB3Object(kp[i].Key, kp[j].Key, kp[k].Key, kp[i].Value, kp[j].Value, kp[k].Value, ava.id));
+                            var obj = new UB3Object(kp[i].Key, kp[j].Key, kp[k].Key, kp[i].Value, kp[j].Value, kp[k].Value, ava.id);
+                            returnList.Add(obj);
+                            await ub3Collec.InsertOneAsync(obj);
                         }
                         else
                         {
                             combo.Match.Add(ava.id);
+                            returnList.Add(combo);
                             var update = Builders<UB3Object>.Update.Set(c => c.Match, combo.Match);
                             await ub3Collec.FindOneAndUpdateAsync(c => c.id == combo.id, update);
                         }
                     }
                 }
             }
+            return returnList;
         }
     }
 

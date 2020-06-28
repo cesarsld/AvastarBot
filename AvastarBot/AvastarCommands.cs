@@ -172,8 +172,8 @@ namespace AvastarBot
                 embed.AddField("<:iconCommon:723497539571154964> Common traits:", ReturnTraitOfRarity(metadataJson, traitJson, "Common"));
             if (opt.ToLower().StartsWith("unc"))
                 embed.AddField("<:iconUncommon:723497171395018762> Uncommon traits:", ReturnTraitOfRarity(metadataJson, traitJson, "Uncommon"));
-            if (id > 199 && extra.Length == 0)
-                embed.AddField("Unique-By's", $"Fetching combos (Takes few seconds) <a:loading:726356725648719894>");
+            //if (id > 199 && extra.Length == 0)
+            //   embed.AddField("Unique-By's", $"Fetching combos (Takes few seconds) <a:loading:726356725648719894>");
             return embed;
         }
 
@@ -183,26 +183,21 @@ namespace AvastarBot
         {
             var embed = await GenerateAvastarEmbed(id, Context.Channel.Id, opt, max);
             //embed.WithDescription($"Score : {metadataJson["attributes"][5]["value"]}\nTrait disparity : {disp[0]} <:iconCommon:723497539571154964> {disp[1]} <:iconUncommon:723497171395018762>   {disp[2]} <:iconRare:723497171919306813>   {disp[3]} <:iconEpic:723497171957317782>   {disp[4]} <:iconLegendary:723497171147685961>");
-            var message = await ReplyAsync(embed: embed.Build());
             if (id < 200)
+            {
+                await ReplyAsync(embed: embed.Build());
                 return;
-            embed = message.Embeds.FirstOrDefault().ToEmbedBuilder();
-            var ubField = embed.Fields.Where(f => f.Name == "Unique-By's").FirstOrDefault();
+            }
             var input = "";
-            Console.WriteLine("Fetching ub2s");
-            var ub2List = await UB2Object.GetUB2CombosForId(id);
-            Console.WriteLine("Fetching ub3s");
-            var ub3List = await UB3Object.GetUB3CombosForId(id);
-            Console.WriteLine("Appending info");
-            if (ub2List.Count > 0)
-                input += $"- Unique-By-2 combos : {ub2List.Count}\n";
-            if (ub3List.Count > 0)
-                input += $"- Unique-By-3 combos : {ub3List.Count}\n";
+            var avaUbObject = await AvaUBObject.GetAvaUbObjectById(id);
+            if (avaUbObject.ub2List.Count > 0)
+                input += $"- Unique-By-2 combos : {avaUbObject.ub2List.Count}\n";
+            if (avaUbObject.ub3List.Count > 0)
+                input += $"- Unique-By-3 combos : {avaUbObject.ub3List.Count}\n";
             if (input.Length == 0)
-                ubField.Value = "None";
-            else
-                ubField.Value = input;
-            await message.ModifyAsync(msg => msg.Embed = embed.Build());
+                input = "None";
+            embed.AddField("Uniquee-By's", input);
+            await ReplyAsync(embed: embed.Build());
         }
 
         [Command("remaining")]

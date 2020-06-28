@@ -103,9 +103,10 @@ namespace AvastarBot.Mongo
             await ub2Collec.InsertManyAsync(ub2List);
         }
 
-        public static async Task UpdateUb2List(AvastarObject ava)
+        public static async Task<List<UB2Object>> UpdateUb2List(AvastarObject ava)
         {
             var ub2Collec = DatabaseConnection.GetDb().GetCollection<UB2Object>("UB2Collection");
+            var returnList = new List<UB2Object>();
             ava.traits.Remove("background_color");
             ava.traits.Remove("backdrop");
             var kp = ava.traits.ToList();
@@ -117,16 +118,20 @@ namespace AvastarBot.Mongo
 
                     if (combo == null)
                     {
-                        await ub2Collec.InsertOneAsync(new UB2Object(kp[i].Key, kp[j].Key, kp[i].Value, kp[j].Value, ava.id));
+                        var obj = new UB2Object(kp[i].Key, kp[j].Key, kp[i].Value, kp[j].Value, ava.id);
+                        returnList.Add(obj);
+                        await ub2Collec.InsertOneAsync(obj);
                     }
                     else
                     {
                         combo.Match.Add(ava.id);
+                        returnList.Add(combo);
                         var update = Builders<UB2Object>.Update.Set(c => c.Match, combo.Match);
                         await ub2Collec.FindOneAndUpdateAsync(c => c.id == combo.id, update);
                     }
                 }
             }
+            return returnList;
         }
     }
 }
