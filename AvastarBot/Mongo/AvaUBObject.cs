@@ -61,7 +61,7 @@ namespace AvastarBot.Mongo
                     bool uniqueGender = true;
                     foreach (var token in ubs.Match)
                     {
-                        if (avaList.Where(a => a.id == token).FirstOrDefault().Gender == gender)
+                        if (token != ava.id && avaList.Where(a => a.id == token).FirstOrDefault().Gender == gender)
                         {
                             uniqueGender = false;
                             break;
@@ -104,7 +104,7 @@ namespace AvastarBot.Mongo
                     bool uniqueGender = true;
                     foreach (var token in ubs.Match)
                     {
-                        if (avaList.Where(a => a.id == token).FirstOrDefault().Gender == gender)
+                        if (token != ava.id && avaList.Where(a => a.id == token).FirstOrDefault().Gender == gender)
                         {
                             uniqueGender = false;
                             break;
@@ -139,7 +139,7 @@ namespace AvastarBot.Mongo
                 bool uniqueGender = true;
                 foreach (var token in ubs.Match)
                 {
-                    if (avaList.Where(a => a.id == token).FirstOrDefault().Gender == gender)
+                    if (token != ava.id && avaList.Where(a => a.id == token).FirstOrDefault().Gender == gender)
                     {
                         uniqueGender = false;
                         break;
@@ -184,7 +184,7 @@ namespace AvastarBot.Mongo
                 bool uniqueGender = true;
                 foreach (var token in ubs.Match)
                 {
-                    if (avaList.Where(a => a.id == token).FirstOrDefault().Gender == gender)
+                    if (token != ava.id && avaList.Where(a => a.id == token).FirstOrDefault().Gender == gender)
                     {
                         uniqueGender = false;
                         break;
