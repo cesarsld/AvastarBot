@@ -196,8 +196,38 @@ namespace AvastarBot
                 input += $"- Unique-By-3 combos : {avaUbObject.ub3List.Count}\n";
             if (input.Length == 0)
                 input = "None";
-            embed.AddField("Uniquee-By's", input);
+            embed.AddField("Unique-By's", input);
             await ReplyAsync(embed: embed.Build());
+        }
+
+        [Command("top10", RunMode = RunMode.Async)]
+        public async Task GetRarestByUb(string ub)
+        {
+            if (ub.ToLower() != "ub2" && ub.ToLower() != "ub3")
+                return;
+            var waitEmbed = new EmbedBuilder().WithColor(Color.DarkMagenta).WithTitle("Fetching data <a:loading:726356725648719894>");
+            var msg = await ReplyAsync(embed: waitEmbed.Build());
+            var list = await AvaUBObject.GetAvaUbList();
+            foreach (var obj in list)
+            {
+                if (obj.ub2List == null)
+                    obj.ub2List = new List<string>();
+                if (obj.ub3List == null)
+                    obj.ub3List = new List<string>();
+            }
+            if (ub.ToLower() == "ub2")
+                list = list.OrderByDescending(a => a.ub2List.Count).ToList();
+            else if (ub.ToLower() == "ub3")
+                list = list.OrderByDescending(a => a.ub3List.Count).ToList();
+            var embed = new EmbedBuilder().WithColor(Color.DarkMagenta);
+            embed.WithTitle($"Top 10 Unique-By-{ub[2]}");
+            var str = "";
+            for (int i = 0; i < 10; i++)
+            {
+                str += $"{i + 1}. [Avastar #{list[i].id}]({"https://avastars.io/avastar/"}{list[i].id}) - {(ub.ToLower() == "ub2"? list[i].ub2List.Count : list[i].ub3List.Count)} {ub.ToUpper()}s\n";
+            }
+            embed.WithDescription(str);
+            await msg.ModifyAsync(m => m.Embed = embed.Build());
         }
 
         [Command("remaining")]
