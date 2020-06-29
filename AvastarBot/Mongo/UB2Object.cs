@@ -16,6 +16,8 @@ namespace AvastarBot.Mongo
         public string Trait2Type;
 
         public List<long> Match;
+        public UB2Object()
+        { }
         public UB2Object(string name1, string name2, string type1, string type2, long avaId)
         {
             id = ObjectId.GenerateNewId();

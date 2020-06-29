@@ -68,13 +68,10 @@ namespace AvastarBot.Mongo
                         }
                     }
                     if (uniqueGender)
-                    {
-                        ubs.Match = new List<long>() { ava.id };
                         ub2List.Add(ubs);
-                    }
                 }
                 avaUBList.Add(new AvaUBObject(ava.id, ub2List));
-                Console.SetCursorPosition(0, Console.CursorTop - 1);
+                Console.SetCursorPosition(0, 2 - 1);
                 index++;
             }
             index = 0;
@@ -111,13 +108,10 @@ namespace AvastarBot.Mongo
                         }
                     }
                     if (uniqueGender)
-                    {
-                        ubs.Match = new List<long>() { ava.id };
                         ub3List.Add(ubs);
-                    }
                     avaUBList.Where(a => a.id == ava.id).FirstOrDefault().ub3List = ub3List.Select(ub => ub.id.ToString()).ToList();
                 }
-                Console.SetCursorPosition(0, Console.CursorTop - 1);
+                Console.SetCursorPosition(0, 3 - 1);
                 index++;
             }
             var collec = DatabaseConnection.GetDb().GetCollection<AvaUBObject>("AvaUbCollection");
@@ -146,10 +140,7 @@ namespace AvastarBot.Mongo
                     }
                 }
                 if (uniqueGender)
-                {
-                    ubs.Match = new List<long>() { ava.id };
                     ub2List.Add(ubs);
-                }
             }
             var avaUbObj = new AvaUBObject(ava.id, ub2List);
             var collec = DatabaseConnection.GetDb().GetCollection<AvaUBObject>("AvaUbCollection");
@@ -191,10 +182,7 @@ namespace AvastarBot.Mongo
                     }
                 }
                 if (uniqueGender)
-                {
-                    ubs.Match = new List<long>() { ava.id };
                     ub3List.Add(ubs);
-                }
             }
             avaUbObj.ub3List = ub3List.Select(a => a.id.ToString()).ToList();
             var ub3Update = Builders<AvaUBObject>.Update.Set(a => a.ub3List, avaUbObj.ub3List);
