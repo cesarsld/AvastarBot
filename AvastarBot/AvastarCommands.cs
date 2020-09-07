@@ -190,9 +190,9 @@ namespace AvastarBot
             }
             var input = "";
             var avaUbObject = await AvaUBObject.GetAvaUbObjectById(id);
-            if (avaUbObject.ub2List.Count > 0)
+            if (avaUbObject.ub2List != null && avaUbObject.ub2List.Count > 0)
                 input += $"- Unique-By-2 combos : {avaUbObject.ub2List.Count}\n";
-            if (avaUbObject.ub3List.Count > 0)
+            if (avaUbObject.ub3List != null && avaUbObject.ub3List.Count > 0)
                 input += $"- Unique-By-3 combos : {avaUbObject.ub3List.Count}\n";
             if (input.Length == 0)
                 input = "None";
