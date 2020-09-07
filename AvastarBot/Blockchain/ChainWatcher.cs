@@ -47,6 +47,9 @@ namespace AvastarBot.Blockchain
                 lastBlock = await GetLastBlockCheckpoint(web3);
                 try
                 {
+                    if (lastBlock.BlockNumber.Value - firstBlock.BlockNumber.Value > 20000) {
+                        lastBlock = new BlockParameter(new HexBigInteger(firstBlock.BlockNumber.Value + 20000));
+                    }
                     // event filters
                     var newPrimeFilter = newPrimeEvent.CreateFilterInput(firstBlock, lastBlock);
 
