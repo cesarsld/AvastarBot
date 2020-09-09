@@ -52,8 +52,9 @@ namespace AvastarBot.Mongo
         {
             var collec = DatabaseConnection.GetDb().GetCollection<AvastarObject>("AvastarCollection");
             var ava = (await collec.FindAsync(a => a.id == id)).FirstOrDefault();
-            await UB2Object.UpdateUb2List(ava);
-            await UB3Object.UpdateUb3List(ava);
+            var ub2List = await UB2Object.UpdateUb2List(ava);
+            var ub3List = await UB3Object.UpdateUb3List(ava);
+            await AvaUBObject.UpdateAvaUbList(ava, ub2List, ub3List);
         }
 
         public static async Task CreateAva(int id)

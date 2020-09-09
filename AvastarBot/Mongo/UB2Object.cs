@@ -46,26 +46,6 @@ namespace AvastarBot.Mongo
                     ub2List.Add(combo);
                 }
             }
-            var ub2Many = ub2List.Where(ub2 => ub2.Match.Count > 1).ToList();
-            var avaList = await AvastarObject.GetAvaList();
-            ub2List = ub2List.Where(ub2 => ub2.Match.Count == 1).ToList();
-            foreach (var ubs in ub2Many)
-            {
-                bool uniqueGender = true;
-                foreach (var token in ubs.Match)
-                {
-                    if (avaList.Where(a => a.id == token).FirstOrDefault().Gender == gender)
-                    {
-                        uniqueGender = false;
-                        break;
-                    }
-                }
-                if (uniqueGender)
-                {
-                    ubs.Match = new List<long>() { id };
-                    ub2List.Add(ubs);
-                }
-            }
             return ub2List;
         }
 
@@ -126,10 +106,13 @@ namespace AvastarBot.Mongo
                     }
                     else
                     {
-                        combo.Match.Add(ava.id);
+                        if (!combo.Match.Contains(ava.id))
+                        {
+                            var update = Builders<UB2Object>.Update.Set(c => c.Match, combo.Match);
+                            await ub2Collec.FindOneAndUpdateAsync(c => c.id == combo.id, update);
+                            combo.Match.Add(ava.id);
+                        }
                         returnList.Add(combo);
-                        var update = Builders<UB2Object>.Update.Set(c => c.Match, combo.Match);
-                        await ub2Collec.FindOneAndUpdateAsync(c => c.id == combo.id, update);
                     }
                 }
             }

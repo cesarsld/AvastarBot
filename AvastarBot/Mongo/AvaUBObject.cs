@@ -35,7 +35,7 @@ namespace AvastarBot.Mongo
             var avaList = await AvastarObject.GetSeriesList();
             var ub2TotalList = await UB2Object.GetUb2List();
             var avaUBList = new List<AvaUBObject>();
-            Console.WriteLine("Ub2 List Generation");
+            //Ub2 List Generation
             var count = avaList.Count;
             var index = 0;
             foreach (var ava in avaList)
@@ -76,7 +76,7 @@ namespace AvastarBot.Mongo
             }
             index = 0;
             var ub3TotalList = await UB3Object.GetUb3List();
-            Console.WriteLine("Generating Ub3 list");
+            //Generating Ub3 list
             foreach (var ava in avaList)
             {
                 Console.WriteLine($"{index} out of {count}");
@@ -151,38 +151,56 @@ namespace AvastarBot.Mongo
             // ub2Copy contains all combos that are duplicates
             // get all ID in each combo, find only the ones that are same gender
             // access avaubdata and remove ID of combo
-            foreach (var ub in ub2Copy)
+            try
             {
-                foreach (var id in ub.Match)
+                foreach (var ub in ub2Copy)
                 {
-                    var tempAva = avaList.Where(a => a.id == id).FirstOrDefault();
-                    if (tempAva.Gender == ava.Gender)
+                    foreach (var id in ub.Match)
                     {
-                        var tempAvaUb = avaUbList.Where(a => a.id == id).FirstOrDefault();
-                        if (tempAvaUb.ub2List.Remove(ub.id.ToString()))
+                        var tempAva = avaList.Where(a => a.id == id).FirstOrDefault();
+                        if (tempAva == null)
+                            continue;
+                        if (tempAva.Gender == ava.Gender)
                         {
-                            var update = Builders<AvaUBObject>.Update.Set(a => a.ub2List, tempAvaUb.ub2List);
-                            await collec.UpdateOneAsync(a => a.id == tempAvaUb.id, update);
+                            var tempAvaUb = avaUbList.Where(a => a.id == id).FirstOrDefault();
+                            if (tempAvaUb == null)
+                                continue;
+                            if (tempAvaUb.ub2List.Remove(ub.id.ToString()))
+                            {
+                                var update = Builders<AvaUBObject>.Update.Set(a => a.ub2List, tempAvaUb.ub2List);
+                                await collec.UpdateOneAsync(a => a.id == tempAvaUb.id, update);
+                            }
                         }
                     }
                 }
             }
-            //Computing UB3s
-            var ub3Many = ub3List.Where(ub3 => ub3.Match.Count > 1).ToList();
-            ub3List = ub3List.Where(ub3 => ub3.Match.Count == 1).ToList();
-            foreach (var ubs in ub3Many)
+            catch (Exception e)
             {
-                bool uniqueGender = true;
-                foreach (var token in ubs.Match)
+                Console.WriteLine(e.Message);
+            }
+            //Computing UB3s
+            try
+            {
+                var ub3Many = ub3List.Where(ub3 => ub3.Match.Count > 1).ToList();
+                ub3List = ub3List.Where(ub3 => ub3.Match.Count == 1).ToList();
+                foreach (var ubs in ub3Many)
                 {
-                    if (token != ava.id && avaList.Where(a => a.id == token).FirstOrDefault().Gender == gender)
+                    bool uniqueGender = true;
+                    foreach (var token in ubs.Match)
                     {
-                        uniqueGender = false;
-                        break;
+                        if (token != ava.id && avaList.Where(a => a.id == token).FirstOrDefault().Gender == gender)
+                        {
+                            uniqueGender = false;
+                            break;
+                        }
                     }
+                    if (uniqueGender)
+                        ub3List.Add(ubs);
                 }
-                if (uniqueGender)
-                    ub3List.Add(ubs);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
             avaUbObj.ub3List = ub3List.Select(a => a.id.ToString()).ToList();
             var ub3Update = Builders<AvaUBObject>.Update.Set(a => a.ub3List, avaUbObj.ub3List);
@@ -194,9 +212,13 @@ namespace AvastarBot.Mongo
                 foreach (var id in ub.Match)
                 {
                     var tempAva = avaList.Where(a => a.id == id).FirstOrDefault();
+                    if (tempAva == null)
+                        continue;
                     if (tempAva.Gender == ava.Gender)
                     {
                         var tempAvaUb = avaUbList.Where(a => a.id == id).FirstOrDefault();
+                        if (tempAvaUb == null)
+                            continue;
                         if (tempAvaUb.ub3List.Remove(ub.id.ToString()))
                         {
                             var update = Builders<AvaUBObject>.Update.Set(a => a.ub3List, tempAvaUb.ub3List);

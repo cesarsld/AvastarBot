@@ -117,6 +117,7 @@ namespace AvastarBot
         }
 
 
+
         public static async Task<EmbedBuilder> GenerateAvastarEmbed(int id, ulong channelId, string opt, string max, string extra = "")
         {
             string metadatastr = "";
@@ -445,5 +446,11 @@ namespace AvastarBot
         //{
         //    var embed = new Embed
         //}
+        [Command("push", RunMode = RunMode.Async)]
+        public async Task PushAvaUbUpdate(int id)
+        {
+            //await AvastarObject.UpdateUBs(id);
+            //await ReplyAsync("Done!");
+        }
     }
 }

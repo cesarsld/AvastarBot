@@ -73,9 +73,9 @@ namespace AvastarBot.Blockchain
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    Logger.Log(e.Message);
                 }
-                await Task.Delay(60000);
+                await Task.Delay(120000);
             }
         }
 
