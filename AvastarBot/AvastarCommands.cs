@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Numerics;
 using MongoDB.Driver;
 using Discord;
+using Discord.WebSocket;
 using Discord.Commands;
 using Newtonsoft.Json.Linq;
 using AvastarBot.Mongo;
@@ -201,6 +202,24 @@ namespace AvastarBot
             await ReplyAsync(embed: embed.Build());
         }
 
+        [Command("top10score")]
+        public async Task GetTop10Score()
+        {
+            var waitEmbed = new EmbedBuilder().WithColor(Color.DarkMagenta).WithTitle("Fetching data <a:loading:726356725648719894>");
+            var msg = await ReplyAsync(embed: waitEmbed.Build());
+            var list = await AvastarObject.GetSeriesList();
+            list = list.OrderByDescending(a => a.Score).ToList();
+            var embed = new EmbedBuilder().WithColor(Color.DarkMagenta);
+            embed.WithTitle($"Top 10 by Score");
+            var str = "";
+            for (int i = 0; i < 10; i++)
+            {
+                str += $"{i + 1}. [Avastar #{list[i].id}]({"https://avastars.io/avastar/"}{list[i].id}) - {list[i].Score}s\n";
+            }
+            embed.WithDescription(str);
+            await msg.ModifyAsync(m => m.Embed = embed.Build());
+        }
+
         [Command("top10", RunMode = RunMode.Async)]
         public async Task GetRarestByUb(string ub)
         {
@@ -225,7 +244,7 @@ namespace AvastarBot
             var str = "";
             for (int i = 0; i < 10; i++)
             {
-                str += $"{i + 1}. [Avastar #{list[i].id}]({"https://avastars.io/avastar/"}{list[i].id}) - {(ub.ToLower() == "ub2"? list[i].ub2List.Count : list[i].ub3List.Count)} {ub.ToUpper()}s\n";
+                str += $"{i + 1}. [Avastar #{list[i].id}]({"https://avastars.io/avastar/"}{list[i].id}) - {(ub.ToLower() == "ub2" ? list[i].ub2List.Count : list[i].ub3List.Count)} {ub.ToUpper()}s\n";
             }
             embed.WithDescription(str);
             await msg.ModifyAsync(m => m.Embed = embed.Build());
