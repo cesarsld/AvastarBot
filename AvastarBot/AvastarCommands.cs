@@ -214,7 +214,7 @@ namespace AvastarBot
             var str = "";
             for (int i = 0; i < 10; i++)
             {
-                str += $"{i + 1}. [Avastar #{list[i].id}]({"https://avastars.io/avastar/"}{list[i].id}) - {list[i].Score}s\n";
+                str += $"{i + 1}. [Avastar #{list[i].id}]({"https://avastars.io/avastar/"}{list[i].id}) - {list[i].Score}\n";
             }
             embed.WithDescription(str);
             await msg.ModifyAsync(m => m.Embed = embed.Build());
