@@ -144,7 +144,12 @@ namespace AvastarBot.Mongo
             }
             var avaUbObj = new AvaUBObject(ava.id, ub2List);
             var collec = DatabaseConnection.GetDb().GetCollection<AvaUBObject>("AvaUbCollection");
-            await collec.InsertOneAsync(avaUbObj);
+            var avaUbObjFromCollec = await (await collec.FindAsync(auo => auo.id == ava.id)).FirstOrDefaultAsync();
+            if (avaUbObjFromCollec == null)
+                await collec.InsertOneAsync(avaUbObj);
+            else {
+                await collec.FindOneAndReplaceAsync(auo => auo.id == ava.id, avaUbObj);
+            }
             avaUbList.Add(avaUbObj);
             foreach (var ub in ub2List)
                 ub2Copy.Remove(ub);

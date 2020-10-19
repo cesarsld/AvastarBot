@@ -468,8 +468,22 @@ namespace AvastarBot
         [Command("push", RunMode = RunMode.Async)]
         public async Task PushAvaUbUpdate(int id)
         {
-            //await AvastarObject.UpdateUBs(id);
-            //await ReplyAsync("Done!");
+            if (Context.Message.Author.Id != 195567858133106697)
+                return;
+            await AvastarObject.UpdateUBs(id);
+            await ReplyAsync("Done!");
+        }
+
+        [Command("pushrange", RunMode = RunMode.Async)]
+        public async Task PushAvaUbUpdate(int first, int last)
+        {
+            if (Context.Message.Author.Id != 195567858133106697)
+                return;
+            for (int i = first; i <= last; i++)
+            {
+                await AvastarObject.UpdateUBs(i);
+                await ReplyAsync($"Done pushing #{i}!");
+            }
         }
     }
 }

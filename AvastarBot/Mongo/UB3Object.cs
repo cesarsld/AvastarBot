@@ -120,9 +120,9 @@ namespace AvastarBot.Mongo
                         {
                             if (!combo.Match.Contains(ava.id))
                             {
+                                combo.Match.Add(ava.id);
                                 var update = Builders<UB3Object>.Update.Set(c => c.Match, combo.Match);
                                 await ub3Collec.FindOneAndUpdateAsync(c => c.id == combo.id, update);
-                                combo.Match.Add(ava.id);
                             }
                             returnList.Add(combo);
                         }
