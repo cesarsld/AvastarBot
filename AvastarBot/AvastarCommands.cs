@@ -470,6 +470,7 @@ namespace AvastarBot
         {
             if (Context.Message.Author.Id != 195567858133106697)
                 return;
+            await ReplyAsync("Starting push!");
             await AvastarObject.UpdateUBs(id);
             await ReplyAsync("Done!");
         }
@@ -481,6 +482,7 @@ namespace AvastarBot
                 return;
             for (int i = first; i <= last; i++)
             {
+                await ReplyAsync($"Starting push for #{i}!");
                 await AvastarObject.UpdateUBs(i);
                 await ReplyAsync($"Done pushing #{i}!");
             }
