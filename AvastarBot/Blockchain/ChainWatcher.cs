@@ -17,6 +17,7 @@ namespace AvastarBot.Blockchain
         public static string avastarContractAddress = "0xF3E778F839934fC819cFA1040AabaCeCBA01e049";
         private static int lastMinted = 0;
 
+
         public static async Task<BigInteger> GetAvastarCount()
         {
             var web3 = new Web3(web3Url);
@@ -26,12 +27,22 @@ namespace AvastarBot.Blockchain
             return number;
         }
 
+        public static async Task<string> GetOwnerOf(int tokenId) {
+            Web3 web3;
+            web3 = new Web3("https://mainnet.infura.io/v3/b4e2781f02a94a5a96dcf8ce8cab9449");
+            var handler = web3.Eth.GetContractQueryHandler<OwnerOf>();
+            var param = new OwnerOf() { TokenId = tokenId };
+            var address = await handler.QueryAsync<string>(avastarContractAddress, param);
+            return address;
+        }
+
         public static async Task WatchChainForEvents()
         {
             // initiate web, contract and events
             bool first = false;
             Web3 web3 = new Web3(web3Url);
             var newPrimeEvent = web3.Eth.GetEvent<NewPrimeEvent>(avastarContractAddress);
+            var transferEvent = web3.Eth.GetEvent<Transfer>(avastarContractAddress);
             bool isOn = true;
             // get last block param from db
 
@@ -52,9 +63,11 @@ namespace AvastarBot.Blockchain
                     }
                     // event filters
                     var newPrimeFilter = newPrimeEvent.CreateFilterInput(firstBlock, lastBlock);
+                    var transferFilter = transferEvent.CreateFilterInput(firstBlock, lastBlock);
 
                     // event logs from block range
                     var newPrimeLogs = await newPrimeEvent.GetAllChanges(newPrimeFilter);
+                    var transferLogs = await transferEvent.GetAllChanges(transferFilter);
 
                     foreach (var prime in newPrimeLogs)
                     {
@@ -67,6 +80,9 @@ namespace AvastarBot.Blockchain
                                 await PostToBirthChannel((int)prime.Event.id);
                             }
                         }
+                    }
+                    foreach (var transfer in transferLogs) {
+                        await AvastarObject.UpdateOwner((int)transfer.Event.TokenId, transfer.Event.To);
                     }
                     checkpoint.lastBlockChecked = Convert.ToInt32(lastBlock.BlockNumber.Value.ToString());
                     await checkCollec.FindOneAndReplaceAsync(c => c.id == 1, checkpoint);
@@ -105,6 +121,24 @@ namespace AvastarBot.Blockchain
     public class totalSupplyFunction : FunctionMessage
     {
     }
+    [Function("balanceOf", "uint256")]
+    public class BalanceOfFunction : FunctionMessage
+    {
+        [Parameter("address")]
+        public string Owner { get; set; }
+    }
+
+    [Function("ownerOf", "address")]
+    public class OwnerOf : FunctionMessage {
+        [Parameter("uint256")]
+        public BigInteger TokenId { get; set; }
+    }
+
+    [Function("decimals", "uint128")]
+    public class DecimalsFunction : FunctionMessage
+    {
+    }
+
 
     public class Checkpoint
     {
